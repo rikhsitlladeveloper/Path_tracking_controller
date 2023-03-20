@@ -206,3 +206,5 @@ include_directories(
 # catkin_add_nosetests(test)
 add_executable(path src/path.cpp)
 target_link_libraries(path ${catkin_LIBRARIES})
+add_executable(control src/control.cpp)
+target_link_libraries(control ${catkin_LIBRARIES})
