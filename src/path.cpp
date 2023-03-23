@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     path_pub.publish(path);
 
     file.close();
- 
+    ros::spin();
 
     return 0;
 }

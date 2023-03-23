@@ -68,7 +68,7 @@ public:
     if (angle > M_PI)
       return angle - 2 * M_PI;
     
-    if (angle < M_PI)
+    if (angle < -M_PI)
       return angle + 2 * M_PI;
     
     return angle;
@@ -83,10 +83,8 @@ public:
   {         
       double front_x = wheelbase * cos(yaw) + pose_x;
       double front_y = wheelbase * sin(yaw) + pose_y;
-      std::cout << "front_x: " << front_x << std::endl;
-      std::cout << "front_y: " << front_y << std::endl;
-      std::cout << "path_x_size: " << path_x_points.size() << std::endl;
-      std::cout << "path_y_size: " << path_y_points.size() << std::endl;
+      // std::cout << "front_x: " << front_x << std::endl;
+      // std::cout << "front_y: " << front_y << std::endl;
       
       std::vector<double> dx, dy, dxy;
       
@@ -104,31 +102,28 @@ public:
         dxy.push_back(xy_hypot);
       } 
       
-      std::cout << "dx_size: " << dx.size() << std::endl;
-      std::cout << "dy_size: " << dy.size() << std::endl;
-
-      //std::transform(path_y_points.begin(), path_y_points.end(), dy.begin(), [front_y](double y){ return front_y - y; });
-      // find the index of closest point
-      // int target_index = std::distance(dx.begin(), std::min_element(dx.begin(), dx.end(), [](double a, double b){ return std::hypot(a, b) < std::hypot(b, a); }));
-      //int target_index = std::distance(dxy.begin(), std::min_element(dxy.begin(), dxy.end()));
-      //int target_index = std::distance(dx, std::min_element(dx, dx + dx.size(), [dy](double a, double b) {
-      //return std::hypot(a, dy[std::distance(dx, &a)]) < std::hypot(b, dy[std::distance(dx, &b)]);}));
-      target_index = std::min_element(dx, dy);
-      // double min_dist = dxy[0];
-      // for(int i=0; i<dxy.size();i++){
-      //   if(dxy[i]< min_dist){
-      //     min_dist = dxy[i];
-          
-      //     int target_index = i;
-      //   }
-      std::cout << "index ;"<< i <<" "<< dxy[i] << std::endl;
+      double min_dist = dxy[100];
+      for(int i=0; i<dxy.size();i++){
+          if(dxy[i]< min_dist){
+            min_dist = dxy[i];
+            target_index = i;
+            //std::cout << "Index: " << target_index << std::endl;
+         }}
       
-      std::cout << "index:" << target_index << std::endl;
+      // std::cout << "index:" << target_index << std::endl;
       std::array<double, 3> front_axle_vec_rot_90 = { std::cos(yaw - M_PI / 2.0), std::sin(yaw - M_PI / 2.0) };
+      // for(int i=0;i<front_axle_vec_rot_90.size(); i++){
+      //   std::cout << "front_axle :" <<  front_axle_vec_rot_90[i] << std::endl;
+      // }
       std::array<double, 3> vec_target_2_front = { dx[target_index], dy[target_index] };
+      // for(int i=0;i<vec_target_2_front.size(); i++){
+      //   std::cout << "vec_target :" <<  vec_target_2_front[i] << std::endl;
+      // }
       // crosstrack error
       double ef = std::inner_product(vec_target_2_front.begin(), vec_target_2_front.end(), front_axle_vec_rot_90.begin(), 0.0);
+      ef = static_cast<double>(ef);
       // vehicle heading 
+      // std::cout << "ef: " << ef << std::endl;
       double theta = yaw;
       // std::cout << "theta :" << theta << std::endl;
       // approximate heading of path at (path_x, path_y)
@@ -137,33 +132,33 @@ public:
       double path_y      = path_y_points[target_index];
       double path_x_next = path_x_points[target_index+1];
       double path_y_next = path_y_points[target_index+1];
-      if (init == false){
-        relative_x = pose_x - path_x_next;
-        relative_y = pose_y - path_y_next;
-        init = true;
-      }
-      pose_x = pose_x + relative_x;
-      pose_y = pose_y + relative_y;
-      std::cout << "path: " << path_y_next << path_y << path_x_next << path_x <<std::endl;
+      // if (init == false){
+      //   relative_x = pose_x - path_x_next;
+      //   relative_y = pose_y - path_y_next;
+      //   init = true;
+      // }
+      // pose_x = pose_x + relative_x;
+      // pose_y = pose_y + relative_y;
+      // std::cout << "path: " << path_y_next << path_y << path_x_next << path_x <<std::endl;
       //double theta_p     = std::atan((path_y_next - path_y) / (path_x_next - path_x));
-      double theta_p     = std::atan((path_y_next - pose_y) / (path_x_next - pose_x));
-
-      // std::cout << "theta_p:" << theta_p << std::endl;
+      double theta_p     =  std::atan2(path_y_next - path_y, path_x_next - path_x);
+      // std::cout << "theta_p :" << theta_p << std::endl;
       // theta_e is the heading error
-      double theta_e = theta_p + theta;
-      std::cout << "theta_e: " << theta_e << std::endl;
+      double theta_e = normalize(theta_p - theta);
+      // std::cout << "theta_e: " << theta_e << std::endl;
       double f_vel = std::sqrt(vel_x * vel_x + vel_y * vel_y);
-      double delta = theta_e + std::atan(0.45 * ef/ f_vel);
-
+      
+      //double delta = theta_e + std::atan2(0.45 * ef, f_vel);
+      double delta = theta_e + atan2(0.45 * ef, f_vel);
       // theta_e  = rad_to_deg(theta_e);
 
       //ef = round(ef, 3);
-      std::cout << "delta: " << delta << std::endl;
+      std::cout << "Crosstrack error: " << ef << std::endl;
       // implement constant pure pursuit controller
-      ackermann_msg.speed = 5;
-      ackermann_msg.steering_angle = -theta_e;
+      ackermann_msg.speed = 10;
+      ackermann_msg.steering_angle = delta;
       //std::cout << "publish" << std::endl;
-      // ackermann_pub.publish(ackermann_msg);
+      ackermann_pub.publish(ackermann_msg);
     }
   
 
