@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     std::string line;
     ROS_INFO("Path is generating");
 
-    std::string filename = "/home/tilla/motion_plan_ws/src/path_tracking_controller/src/wps.csv";
+    std::string filename = "/home/tilla/motion_plan_ws/src/path_tracking_controller/waypoints/wps.csv";
     std::ifstream infile;
     nav_msgs::Path path;
     geometry_msgs::PoseStamped pose;
