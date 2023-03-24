@@ -42,17 +42,15 @@ Here is Installation of  Path Tracking Controller with Polaris GEM e2 Simulator
 
 
 ```
-#Usage
+# Usage
 
 ```
 $ source devel/setup.bash
 $ roslaunch gem_gazebo gem_gazebo_rviz.launch velodyne_points:="true"
 $ roslaunch path_tracking_controller path_tracking.launch 
-
 ```
 
 # You can check rqt plot of cross track error with following command
 ```
     $ rosrun rqt_plot rqt_plot 
- 
 ```
