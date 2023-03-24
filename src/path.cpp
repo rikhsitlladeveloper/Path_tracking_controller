@@ -8,6 +8,7 @@
 #include <vector>
 #include <chrono>
 #include <thread>
+#include <ros/package.h>
    
 int main(int argc, char **argv)
 {
@@ -19,8 +20,10 @@ int main(int argc, char **argv)
     std::vector<std::vector<float>> data;
     std::string line;
     ROS_INFO("Path is generating");
-
-    std::string filename = "/home/tilla/motion_plan_ws/src/path_tracking_controller/waypoints/wps.csv";
+    std::string package_name = "path_tracking_controller";
+    std::string dir = ros::package::getPath(package_name);
+    std::cout << dir << std::endl;
+    std::string filename = dir + "/waypoints/wps.csv";
     std::ifstream infile;
     nav_msgs::Path path;
     geometry_msgs::PoseStamped pose;

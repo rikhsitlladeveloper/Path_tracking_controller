@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  roslib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -103,10 +104,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES path_tracking_controller
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
+   #INCLUDE_DIRS include
+   #LIBRARIES path_tracking_controller
+   #CATKIN_DEPENDS roscpp rospy std_msgs
+   #DEPENDS system_lib
 )
 
 ###########
@@ -208,5 +209,3 @@ add_executable(path src/path.cpp)
 target_link_libraries(path ${catkin_LIBRARIES})
 add_executable(control src/control.cpp)
 target_link_libraries(control ${catkin_LIBRARIES})
-add_executable(cmd_vel src/cmd_vel.cpp)
-target_link_libraries(cmd_vel ${catkin_LIBRARIES})

@@ -1,0 +1,11 @@
+<launch>
+       
+        <!-- Publish Path from waypoints -->
+        <node pkg="path_tracking_controller" name="path" type="path" required="true" output="screen"/>
+
+        <!-- Path tracking node using Stanley Algorithm -->
+
+        <node pkg="path_tracking_controller" type="control" name="control" required="true" output="screen">
+        
+        </node>
+</launch>
