@@ -109,10 +109,11 @@ public:
       
       std::array<double, 3> front_axle_vec_rot_90 = { std::cos(yaw - M_PI / 2.0), std::sin(yaw - M_PI / 2.0) };
       std::array<double, 3> vec_target_2_front = { dx[target_index], dy[target_index] };
+      
       // crosstrack error
       double ef = std::inner_product(vec_target_2_front.begin(), vec_target_2_front.end(), front_axle_vec_rot_90.begin(), 0.0);
       ef = static_cast<double>(ef);
-      // vehicle heading 
+
       double theta = yaw;
       // approximate heading of path at (path_x, path_y)
       double path_x      = path_x_points[target_index];
